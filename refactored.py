@@ -32,7 +32,7 @@ class Rectangle(object):
             self.canvas.create_line(self.x + self.width, self.y, self.x + self.width, self.y + self.height)
         # bottom
         if self.walls[3]:
-            self.canvas.create_line(self.x + self.height, self.y + self.width, self.x, self.y + self.height)
+            self.canvas.create_line(self.x + self.width, self.y + self.height, self.x, self.y + self.height)
         # left
         if self.walls[0]:
             self.canvas.create_line(self.x, self.y + self.height, self.x, self.y)
