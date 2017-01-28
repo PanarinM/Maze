@@ -1,7 +1,8 @@
-from tkinter import *
 from random import choice
-from time import sleep
 from sys import setrecursionlimit
+from time import sleep
+from tkinter import *
+
 rectangles = []
 stack = []
 
@@ -20,6 +21,7 @@ class Rectangle(object):
         self.active = False
         self.x = 0
         self.y = 0
+        self.z = None
 
     def draw(self, canvas, x, y, fill='white'):
         self.x = x
