@@ -86,8 +86,12 @@ class MazeCreator(object):
     list_of_rects = []
     stack = []
 
-    def __init__(self, canvas, width, height):
-        self.canvas = canvas
+    def __init__(self, width, height, canvas_width=802, canvas_height=802):
+        master = Tk()
+        self.canvas = Canvas(master,
+                             width=canvas_width,
+                             height=canvas_height)
+        self.canvas.pack()
         self.width = width
         self.height = height
         self.canvas.update()
@@ -95,37 +99,33 @@ class MazeCreator(object):
         self.rows = int((self.canvas.winfo_height() - 2) / self.height)
 
     def gen_rects(self):
-        self.canvas.update()
         for row in range(self.rows):
             for col in range(self.cols):
                 self.list_of_rects.append(
                     Rectangle(self.width, self.height, self.width * col + 2, self.height * row + 2,
                               col + row * self.cols, self.canvas))
                 self.list_of_rects[col + row * self.cols].draw()
+        self.canvas.update()
 
     def run(self, start):
         index = start
         while index >= 0:
             self.stack.append(index)
             index = self.list_of_rects[index].step(self.list_of_rects, self.cols)
-        print('stuck!')
-        print(self.stack)
-        # TODO: Finish backtracking!
-        # if len(stack) > 1:
-        #     backtrack(stack, canvas, rectangles)
 
+    def backtrack(self):
+        new_index = self.stack.pop()
+        new_index = self.stack.pop()
+        if len(self.stack) == 0:
+            return None
+        self.list_of_rects[new_index].draw(fill='magenta')
+        return new_index
 
 if __name__ == '__main__':
-    # setrecursionlimit(8000)
-    master = Tk()
-    canvas_width = 802
-    canvas_height = 802
-    w = Canvas(master,
-               width=canvas_width,
-               height=canvas_height)
-    w.pack()
-    maze = MazeCreator(w, 40, 40)
+    maze = MazeCreator(40, 40, 802, 802)
     maze.gen_rects()
-    w.update()
-    maze.run(0)
+    index = 0
+    while index is not None:
+        maze.run(index)
+        index = maze.backtrack()
     mainloop()
