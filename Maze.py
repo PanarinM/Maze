@@ -21,7 +21,6 @@ class Rectangle(object):
         self.active = False
         self.x = 0
         self.y = 0
-        self.z = None
 
     def draw(self, canvas, x, y, fill='white'):
         self.x = x
