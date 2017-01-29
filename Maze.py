@@ -1,6 +1,6 @@
+import tkinter
 from random import choice
 from time import sleep
-from tkinter import *
 
 
 class Rectangle(object):
@@ -82,10 +82,10 @@ class MazeCreator(object):
     stack = []
 
     def __init__(self, width, height, canvas_width=802, canvas_height=802):
-        master = Tk()
-        self.canvas = Canvas(master,
-                             width=canvas_width,
-                             height=canvas_height)
+        master = tkinter.Tk()
+        self.canvas = tkinter.Canvas(master,
+                                     width=canvas_width,
+                                     height=canvas_height)
         self.canvas.pack()
         self.width = width
         self.height = height
@@ -127,4 +127,4 @@ if __name__ == '__main__':
     while index is not None:
         maze.run(index)
         index = maze.backtrack()
-    mainloop()
+    tkinter.mainloop()
