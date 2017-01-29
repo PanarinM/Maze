@@ -17,11 +17,6 @@ class Rectangle(object):
         self.col = self.x / self.width
         self.row = self.y / self.height
 
-    # def get_row_col(self):
-    #     row = self.x / self.width
-    #     col = self.y / self.height
-    #     return row, col
-
     def draw(self, fill='white'):
         self.canvas.create_rectangle(self.x, self.y, self.x + self.width, self.y + self.height, fill=fill, outline=fill)
         # top
@@ -114,7 +109,7 @@ class MazeCreator(object):
             index = self.list_of_rects[index].step(self.list_of_rects, self.cols)
 
     def backtrack(self):
-        new_index = self.stack.pop()
+        self.stack.pop()
         new_index = self.stack.pop()
         if len(self.stack) == 0:
             return None
@@ -123,7 +118,10 @@ class MazeCreator(object):
 
 
 if __name__ == '__main__':
-    maze = MazeCreator(40, 40, 802, 802)
+    width, height = [int(i.strip()) for i in input('Input width and height of the squares [W, H]: ').split(',')]
+    can_width, can_height = [int(i.strip()) + 2 for i in
+                             input('Input width and height of the canvas [W, H]: ').split(',')]
+    maze = MazeCreator(width, height, can_width, can_height)
     maze.gen_rects()
     index = 0
     while index is not None:
