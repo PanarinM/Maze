@@ -2,9 +2,12 @@ import tkinter
 from random import choice
 from time import sleep
 
+from GUI import BasicGUI
+
 
 class Rectangle(object):
-    def __init__(self, width, height, x, y, index, canvas):
+    def __init__(self, width, height, x, y, index, canvas, delay):
+        self.delay = delay
         self.canvas = canvas
         self.width = width
         self.height = height
@@ -31,11 +34,11 @@ class Rectangle(object):
         # left
         if self.walls[0]:
             self.canvas.create_line(self.x, self.y + self.height, self.x, self.y)
+        self.canvas.update()
 
     def step(self, list_of_rect, row_c):
-        sleep(0.05)
+        self.draw('magenta')
         ways = {}
-        self.canvas.update()
         self.virgin = False
         try:
             if list_of_rect[self.index - 1].row == list_of_rect[self.index].row and (self.index - 1) > 0:
@@ -64,13 +67,14 @@ class Rectangle(object):
                     ways.setdefault('32', list_of_rect[self.index + row_c])
         except IndexError:
             pass
-
+        sleep(self.delay)
         if len(ways) > 0:
             way = choice(list(ways.keys()))
             next_rect = ways[way]
             next_rect.walls[int(way[1])] = False
             self.walls[int(way[0])] = False
             self.draw('yellow')
+            next_rect.draw('magenta')
             return next_rect.index
         else:
             self.draw('yellow')
@@ -81,9 +85,10 @@ class MazeCreator(object):
     list_of_rects = []
     stack = []
 
-    def __init__(self, width, height, canvas_width=802, canvas_height=802):
-        master = tkinter.Tk()
-        self.canvas = tkinter.Canvas(master,
+    def __init__(self, width, height, delay, canvas_width=802, canvas_height=802):
+        self.delay = delay
+        self.master = tkinter.Tk()
+        self.canvas = tkinter.Canvas(self.master,
                                      width=canvas_width,
                                      height=canvas_height)
         self.canvas.pack()
@@ -98,33 +103,41 @@ class MazeCreator(object):
             for col in range(self.cols):
                 self.list_of_rects.append(
                     Rectangle(self.width, self.height, self.width * col + 2, self.height * row + 2,
-                              col + row * self.cols, self.canvas))
+                              col + row * self.cols, self.canvas, self.delay))
                 self.list_of_rects[col + row * self.cols].draw()
         self.canvas.update()
 
     def run(self, start):
         index = start
-        while index >= 0:
-            self.stack.append(index)
+        while True:
+            old_index = index
             index = self.list_of_rects[index].step(self.list_of_rects, self.cols)
+            if index < 0:
+                break
+            self.stack.append(old_index)
 
     def backtrack(self):
-        self.stack.pop()
-        new_index = self.stack.pop()
         if len(self.stack) == 0:
             return None
-        self.list_of_rects[new_index].draw(fill='magenta')
+        new_index = self.stack.pop()
         return new_index
 
 
+class GUI(BasicGUI):
+    def start(self):
+        sq_width = int(self.WidthEntry.get())
+        sq_height = int(self.HeightEntry.get())
+        can_width = int(self.CanWidthEntry.get()) + 2
+        can_height = int(self.CanHeightEntry.get()) + 2
+        delay = float(self.DelayEntry.get())
+        maze = MazeCreator(sq_width, sq_height, delay, can_width, can_height)
+        maze.gen_rects()
+        index = 0
+        while index is not None:
+            maze.run(index)
+            index = maze.backtrack()
+        maze.master.mainloop()
+
+
 if __name__ == '__main__':
-    width, height = [int(i.strip()) for i in input('Input width and height of the squares [W, H]: ').split(',')]
-    can_width, can_height = [int(i.strip()) + 2 for i in
-                             input('Input width and height of the canvas [W, H]: ').split(',')]
-    maze = MazeCreator(width, height, can_width, can_height)
-    maze.gen_rects()
-    index = 0
-    while index is not None:
-        maze.run(index)
-        index = maze.backtrack()
-    tkinter.mainloop()
+    GUI()
